@@ -90,7 +90,8 @@ class TagsController < ApplicationController
     begin
       @tag = Tag.find(params[:id])
     rescue ActiveRecord::RecordNotFound
-      raise ActiveRecord::RecordNotFound, "Couldn't find tag with id '#{params[:id]}'"
+      redirect_to '/404'
+      return
     end
     @tag = @tag.merger if !@tag.canonical? && @tag.merger
     # Temp for testing

@@ -2,8 +2,8 @@ class UsersController < ApplicationController
   cache_sweeper :pseud_sweeper
 
   before_action :check_user_status, only: [:edit, :update]
-  before_action :load_user, except: [:activate, :delete_confirmation, :index]
-  before_action :check_ownership, except: [:activate, :delete_confirmation, :index, :show]
+  before_action :load_user, except: [:activate, :delete_confirmation, :index, :feed]
+  before_action :check_ownership, except: [:activate, :delete_confirmation, :index, :show, :feed]
   skip_before_action :store_location, only: [:end_first_login]
 
   # This is meant to rescue from race conditions that sometimes occur on user creation
@@ -51,6 +51,23 @@ class UsersController < ApplicationController
       @subscription = current_user.subscriptions.where(subscribable_id: @user.id,
                                                        subscribable_type: 'User').first ||
                       current_user.subscriptions.build(subscribable: @user)
+    end
+  end
+
+  # GET /users/:id/feed
+  def feed
+    begin
+      @user = User.find(params[:id])
+    rescue ActiveRecord::RecordNotFound
+      redirect_to '/404'
+      return
+    end
+
+    @works = @user.works.visible_to_all.ordered_by_date_desc.limit(25)
+    
+    respond_to do |format|
+      format.html
+      format.atom
     end
   end
 

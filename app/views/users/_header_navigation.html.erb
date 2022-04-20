@@ -10,6 +10,7 @@
       <%= render :partial => 'subscriptions/form', :locals => { :subscription => @subscription } %>
     </li>
   <% end %>
+  <li><%= link_to_rss feed_user_path(:id => @user.id, :format => :atom) %></li>
   <% if @user == current_user  %>
     <li><%= span_if_current ts("Invitations"), user_invitations_path(@user) %></li>
   <% end %>  
