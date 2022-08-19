@@ -5,6 +5,11 @@ class InboxComment < ApplicationRecord
   belongs_to :user
   belongs_to :feedback_comment, class_name: 'Comment'
 
+  default_scope -> {
+    includes(:feedback_comment).
+      where(comments: {approved: true, hidden_by_admin: false})
+  }
+
   # Filters inbox comments by read and/or replied to and sorts by date
   scope :find_by_filters, lambda { |filters|
     read = case filters[:read]
